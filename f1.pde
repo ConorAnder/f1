@@ -1,8 +1,11 @@
-color background = color(15, 15, 20);
+color background = color(200, 200, 200);
 color primary1 = color(255, 40, 0);
 color primary2 = color(0, 255, 100);
 color accent = color(255, 140, 0);
-color stroke = color(255, 255, 255);
+color stroke = color(15, 15, 20);
+
+int map_width_left, map_width_right;
+int map_height_bottom, map_height_top;
 
 Table hamilton_dry;
 Table hamilton_wet;
@@ -26,10 +29,14 @@ void setup() {
     tsunoda_dry = loadTable("tsunoda_dry.csv", "header");
     tsunoda_wet = loadTable("tsunoda_wet.csv", "header");
 
+    map_width_left = 100; map_width_right = 2 * width / 3;
+    map_height_bottom = 7 * height / 12 - 50; map_height_top = 50;
+
     track_index = 0;
+    plotMap(hamilton_dry, hamilton_dry.getRowCount());
 }
 
 void draw() {
     int size = hamilton_dry.getRowCount();
-    
+    plotPath(hamilton_dry, size);
 }
