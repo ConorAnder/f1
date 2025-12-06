@@ -54,7 +54,7 @@ void plotMap(Table driver_table, int size) {
     ry[size] = ry[0];
 
     stroke(accent);
-    fill(stroke);
+    fill(background);
     strokeWeight(1);
     float minx = min(x), miny = min(y), maxx = max(x), maxy = max(y);
 
@@ -77,25 +77,30 @@ void plotMap(Table driver_table, int size) {
     endShape(CLOSE);
 }
 
-void plotPath(Table driver_table, int size) {
+boolean plotPath(Table driver_table, int size) {
     float[] x = new float[size + 1];
     float[] y = new float[size + 1];
+    float[] s = new float[size + 1];
     for (int i = 0; i < size; i++) {
         float curr_x = driver_table.getFloat(i, "X");
         float curr_y = driver_table.getFloat(i, "Y");
+        float curr_s = driver_table.getFloat(i, "Speed");
         if (!Float.isNaN(curr_x) && !Float.isNaN(curr_y) && int(curr_x) != 0) {
-            x[i] = driver_table.getFloat(i, "X");
-            y[i] = driver_table.getFloat(i, "Y");
+            x[i] = curr_x;
+            y[i] = curr_y;
+            s[i] = curr_s;
         }
     }
+    s[0] = s[1];
     x[0] = x[1];
     y[0] = y[1];
+    s[size] = s[0];
     x[size] = x[0];
     y[size] = y[0];
 
-    stroke(primary1);
     strokeWeight(3);
     float minx = min(x), miny = min(y), maxx = max(x), maxy = max(y);
+    float mins = min(s), maxs = max(s);
 
     int i = track_index;
     if (frameCount % 1 == 0 && track_index < size) {
@@ -103,10 +108,14 @@ void plotPath(Table driver_table, int size) {
         float y1 = map(y[i], miny, maxy, map_height_bottom, map_height_top);
         float x2 = map(x[i+1], minx, maxx, map_width_left, map_width_right);
         float y2 = map(y[i+1], miny, maxy, map_height_bottom, map_height_top);
+        float colour = map(s[i], mins, maxs, 0, 1);
+        stroke(lerpColor(primary1, primary2, colour));
         line(x1, y1, x2, y2);
         track_index++;
     }
     else if(track_index >= size) {
-        noLoop();
+        track_index = 0;
+        return true;
     }
+    return false;
 }

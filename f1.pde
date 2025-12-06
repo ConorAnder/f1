@@ -1,8 +1,8 @@
-color background = color(200, 200, 200);
-color primary1 = color(255, 40, 0);
-color primary2 = color(0, 255, 100);
-color accent = color(255, 140, 0);
-color stroke = color(15, 15, 20);
+color background = color(13, 31, 45);
+color primary1 = color(68, 255, 210);
+color primary2 = color(238, 108, 77);
+color accent = color(255, 221, 74);
+color stroke = color(119, 135, 139);
 
 int map_width_left, map_width_right;
 int map_height_bottom, map_height_top;
@@ -16,8 +16,9 @@ Table tsunoda_wet;
 int track_index;
 
 void settings() {
-    int page_height = 1000;
-    size(int(sqrt(2) * page_height), page_height);
+    // int page_height = 1000;
+    // size(int(sqrt(2) * page_height), page_height);
+    fullScreen();
 }
 
 void setup() {
@@ -33,10 +34,15 @@ void setup() {
     map_height_bottom = 7 * height / 12 - 50; map_height_top = 50;
 
     track_index = 0;
-    plotMap(hamilton_dry, hamilton_dry.getRowCount());
+    //plotMap(hamilton_dry, hamilton_dry.getRowCount());
 }
 
 void draw() {
     int size = hamilton_dry.getRowCount();
-    plotPath(hamilton_dry, size);
+    boolean flag = false;
+    if(flag || plotPath(hamilton_dry, size)) {
+        flag = true;
+        plotPath(hamilton_wet, size);
+        print("Here\n");
+    }
 }
