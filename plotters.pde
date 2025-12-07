@@ -14,10 +14,23 @@ void plotMap(Table driver_table, int size) {
             y[i] = driver_table.getFloat(i, "Y");
         }
     }
-    x[0] = x[1];
-    y[0] = y[1];
-    x[size] = x[0];
-    y[size] = y[0];
+
+    int it = 0;
+    while (int(x[it]) == 0) {
+        it++;
+        if (int(x[it]) != 0) {
+            continue;
+        }
+        int it2 = it;
+        while (it2 >= 0) {
+            x[it2] = x[it];
+            y[it2] = y[it];
+            it2--;
+        }
+        x[size] = x[0];
+        y[size] = y[0];
+    }
+        
 
     for (int i = 0; i < size; i++) {
         float dx = x[i+1] - x[i];
@@ -91,12 +104,41 @@ boolean plotPath(Table driver_table, int size) {
             s[i] = curr_s;
         }
     }
-    s[0] = s[1];
-    x[0] = x[1];
-    y[0] = y[1];
-    s[size] = s[0];
-    x[size] = x[0];
-    y[size] = y[0];
+
+    // Remove leading zeroes
+    int it = 0;
+    while (int(x[it]) == 0) {
+        it++;
+        if (int(x[it]) == 0) {
+            continue;
+        }
+        int it2 = it;
+        while (it2 >= 0) {
+            s[it2] = s[it];
+            x[it2] = x[it];
+            y[it2] = y[it];
+            it2--;
+        }
+    }
+
+    // Remove trailing zeroes
+    it = size;
+    while (int(x[it]) == 0) {
+        it--;
+        if (int(x[it]) == 0) {
+            continue;
+        }
+        int it2 = it;
+        while (it2 <= size) {
+            s[it2] = s[it];
+            x[it2] = x[it];
+            y[it2] = y[it];
+            it2++;
+        }
+        s[size] = s[0];
+        x[size] = x[0];
+        y[size] = y[0];
+    }
 
     strokeWeight(3);
     float minx = min(x), miny = min(y), maxx = max(x), maxy = max(y);

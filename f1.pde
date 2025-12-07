@@ -7,12 +7,17 @@ color stroke = color(119, 135, 139);
 int map_width_left, map_width_right;
 int map_height_bottom, map_height_top;
 
+int bar_width_left, bar_width_right;
+int bar_height_bottom, bar_height_top;
+
 Table hamilton_dry;
 Table hamilton_wet;
 Table leclerc_dry;
 Table leclerc_wet;
 Table tsunoda_dry;
 Table tsunoda_wet;
+Table russel_dry;
+Table russel_wet;
 int track_index;
 
 void settings() {
@@ -29,20 +34,24 @@ void setup() {
     leclerc_wet = loadTable("leclerc_wet.csv", "header");
     tsunoda_dry = loadTable("tsunoda_dry.csv", "header");
     tsunoda_wet = loadTable("tsunoda_wet.csv", "header");
+    russel_dry = loadTable("russel_dry.csv", "header");
+    russel_wet = loadTable("russel_wet.csv", "header");
 
     map_width_left = 100; map_width_right = 2 * width / 3;
     map_height_bottom = 7 * height / 12 - 50; map_height_top = 50;
 
+    bar_width_left = map_width_left; bar_width_right = width / 2 + bar_width_left;
+    bar_height_bottom = height - map_height_top; bar_height_top = map_height_bottom + map_height_top;
+
     track_index = 0;
     //plotMap(hamilton_dry, hamilton_dry.getRowCount());
+    rectMode(CORNERS);
+    rect(bar_width_left, bar_height_top, bar_width_right, bar_height_bottom);
 }
 
 void draw() {
     int size = hamilton_dry.getRowCount();
-    boolean flag = false;
-    if(flag || plotPath(hamilton_dry, size)) {
-        flag = true;
-        plotPath(hamilton_wet, size);
-        print("Here\n");
+    if(plotPath(hamilton_wet, size)) {
+        noLoop();
     }
 }
