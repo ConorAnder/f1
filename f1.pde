@@ -51,7 +51,7 @@ void setup() {
 
 void draw() {
     int size = hamilton_dry.getRowCount();
-    if(plotPath(hamilton_wet, size)) {
+    if(plotPath(russel_dry, size)) {
         noLoop();
     }
 }

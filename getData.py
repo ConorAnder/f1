@@ -10,9 +10,15 @@ def build_csv(year, driver, filename, ref_grid=None):
     session.load()
 
     laps = session.laps.pick_driver(driver)
+    weather = session.weather_data
     clean_laps = laps[(laps['PitInTime'].isnull()) & (laps['PitOutTime'].isnull())]
-    curr_lap = clean_laps.pick_fastest()
-
+    if clean_laps.empty:
+        print(f"No clean laps for {driver} in {year}")
+        return None
+    
+    # Choose the wettest lap, doesn't apply to 2021 as there was no rain
+    clean_laps['RainSamples'] = clean_laps.apply(lambda lap: rain_duration(lap, weather), axis=1)
+    curr_lap = clean_laps.loc[clean_laps['RainSamples'].idxmax()]
     car = curr_lap.get_car_data().add_distance()
     pos = curr_lap.get_pos_data()
     tel = pd.merge_asof(car, pos, on='Time')
@@ -33,6 +39,12 @@ def build_csv(year, driver, filename, ref_grid=None):
 
     data.to_csv(filename, index=False)
     return ref_grid
+
+def rain_duration(lap, weather):
+    start = lap['LapStartTime']
+    end = start + lap['LapTime']
+    rain = weather[(weather['Time'] >= start) & (weather['Time'] <= end) & (weather['Rainfall'] == True)]
+    return len(rain)
 
 
 ref = build_csv(2021, 'HAM', filepath + 'hamilton_dry.csv')

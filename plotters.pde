@@ -121,6 +121,14 @@ boolean plotPath(Table driver_table, int size) {
         }
     }
 
+    // Remove middle zeroes
+    for (it = 1; it < size; it++) {
+        if(int(x[it-1]) == 0) {
+            x[it-1] = x[it];
+            y[it-1] = y[it];
+        }
+    }
+
     // Remove trailing zeroes
     it = size;
     while (int(x[it]) == 0) {
@@ -160,4 +168,8 @@ boolean plotPath(Table driver_table, int size) {
         return true;
     }
     return false;
+}
+
+void plotBarChart() {
+
 }
