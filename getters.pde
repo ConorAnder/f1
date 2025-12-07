@@ -21,8 +21,8 @@ Pair<float[], int[]> getBarValues(Table driver_table, int size) {
             }
         }
         dist[j] = driver_table.getFloat((j + 1) * bin_size - 1, "Distance") - driver_table.getFloat(j * bin_size, "Distance");
-        print("Brake: " + str(brake_freq[j]));
-        print(" Dist: " + str(dist[j]) + "\n");
+        // print("Brake: " + str(brake_freq[j]));
+        // print(" Dist: " + str(dist[j]) + "\n");
     }
     Pair<float[], int[]> pair = new Pair<>(dist, brake_freq);
     return pair;
