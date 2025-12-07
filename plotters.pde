@@ -170,6 +170,21 @@ boolean plotPath(Table driver_table, int size) {
     return false;
 }
 
-void plotBarChart() {
+void plotBarChart(Pair<float[], int[]> pair, int ratio) {
+    rectMode(CORNERS);
+    float dist_max = max(pair.first), dist_min = min(pair.first);
+    int brake_max = max(pair.second), brake_min = min(pair.second);
+    for (int i = 0; i < bin_nums; i++) {
+        float dist_height = ratio * map(pair.first[i], dist_min, dist_max, bar_height_bottom, bar_height_top);
+        float brake_height = map(pair.second[i], brake_min, brake_max, bar_height_bottom, dist_height);
+        // print("Dist Min: " + str(dist_min) + " Dist Max: " + str(dist_max) + " Brake Min: " + str(brake_min) + " Brake Max: " + str(brake_max) + "\n");
+        // print("Dist: " + str(pair.first[i]) + " Brake: " + str(pair.second[i]) + "\n");
+        // print("Dist Height -> " + str(dist_height) + " Brake Height -> " + str(brake_height) + "\n\n");
 
+        fill(primary2);
+        rect(bar_width_left + (i / float(bin_nums)) * bar_width_right, bar_height_bottom, bar_width_left + ((i + 1) / bin_nums) * bar_width_right, dist_height);
+
+        fill(primary1);
+        rect(bar_width_left + (i / float(bin_nums)) * bar_width_right, bar_height_bottom, bar_width_left + ((i + 1) / bin_nums) * bar_width_right, brake_height);
+    }
 }

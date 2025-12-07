@@ -5,7 +5,7 @@ import numpy as np
 filepath = './data/'
 num_samples = 300
 
-def build_csv(year, driver, filename, ref_grid=None):
+def build_csv(year, driver, filename, dist_grid=None):
     session = f1.get_session(year, 'Silverstone', 'R')
     session.load()
 
@@ -23,22 +23,24 @@ def build_csv(year, driver, filename, ref_grid=None):
     pos = curr_lap.get_pos_data()
     tel = pd.merge_asof(car, pos, on='Time')
 
-    if ref_grid is None:
-        ref_grid = np.linspace(tel['Distance'].min(), tel['Distance'].max(), num_samples).round(1)
+    if dist_grid is None:
+        dist_grid = np.linspace(tel['Distance'].min(), tel['Distance'].max(), num_samples)
+    
+    time_grid = np.linspace(tel['Time'].dt.total_seconds().min(), tel['Time'].dt.total_seconds().max(), num_samples)
 
     data = pd.DataFrame({
          'Driver': driver,
-        'Distance': ref_grid,
-        'Time': np.linspace(tel['Time'].dt.total_seconds().min(), tel['Time'].dt.total_seconds().max(), num_samples).round(3),
-        'X': np.interp(ref_grid, tel['Distance'], tel['X']).round(1),
-        'Y': np.interp(ref_grid, tel['Distance'], tel['Y']).round(1),
-        'Speed': np.interp(ref_grid, tel['Distance'], tel['Speed']).round(1),
-        'Throttle': np.interp(ref_grid, tel['Distance'], tel['Throttle']).round(1),
-        'Brake': (np.interp(ref_grid, tel['Distance'], tel['Brake']) > 0.5).astype(bool)
+        'Distance': np.interp(time_grid, tel['Time'].dt.total_seconds(), tel['Distance']).round(1),
+        'Time': time_grid.round(3),
+        'X': np.interp(dist_grid, tel['Distance'], tel['X']).round(1),
+        'Y': np.interp(dist_grid, tel['Distance'], tel['Y']).round(1),
+        'Speed': np.interp(time_grid, tel['Time'].dt.total_seconds(), tel['Speed']).round(1),
+        'Throttle': np.interp(time_grid, tel['Time'].dt.total_seconds(), tel['Throttle']).round(1),
+        'Brake': (np.interp(time_grid, tel['Time'].dt.total_seconds(), tel['Brake']) > 0.5).astype(bool)
     })
 
     data.to_csv(filename, index=False)
-    return ref_grid
+    return dist_grid
 
 def rain_duration(lap, weather):
     start = lap['LapStartTime']

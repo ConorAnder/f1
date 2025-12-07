@@ -10,6 +10,8 @@ int map_height_bottom, map_height_top;
 int bar_width_left, bar_width_right;
 int bar_height_bottom, bar_height_top;
 
+int bin_nums = 10;
+
 Table hamilton_dry;
 Table hamilton_wet;
 Table leclerc_dry;
@@ -18,7 +20,16 @@ Table tsunoda_dry;
 Table tsunoda_wet;
 Table russel_dry;
 Table russel_wet;
-int track_index;
+int track_index, size;
+
+Pair<float[], int[]> hd_bar;
+Pair<float[], int[]> hw_bar;
+Pair<float[], int[]> ld_bar;
+Pair<float[], int[]> lw_bar;
+Pair<float[], int[]> td_bar;
+Pair<float[], int[]> tw_bar;
+Pair<float[], int[]> rd_bar;
+Pair<float[], int[]> rw_bar;
 
 void settings() {
     // int page_height = 1000;
@@ -37,6 +48,17 @@ void setup() {
     russel_dry = loadTable("russel_dry.csv", "header");
     russel_wet = loadTable("russel_wet.csv", "header");
 
+    size = hamilton_dry.getRowCount();
+
+    hd_bar = getBarValues(hamilton_dry, size);
+    hw_bar = getBarValues(hamilton_wet, size);
+    ld_bar = getBarValues(leclerc_dry, size);
+    lw_bar = getBarValues(leclerc_wet, size);
+    td_bar = getBarValues(tsunoda_dry, size);
+    tw_bar = getBarValues(tsunoda_wet, size);
+    rd_bar = getBarValues(russel_dry, size);
+    rw_bar = getBarValues(russel_wet, size);
+
     map_width_left = 100; map_width_right = 2 * width / 3;
     map_height_bottom = 7 * height / 12 - 50; map_height_top = 50;
 
@@ -44,14 +66,11 @@ void setup() {
     bar_height_bottom = height - map_height_top; bar_height_top = map_height_bottom + map_height_top;
 
     track_index = 0;
-    //plotMap(hamilton_dry, hamilton_dry.getRowCount());
-    rectMode(CORNERS);
-    rect(bar_width_left, bar_height_top, bar_width_right, bar_height_bottom);
 }
 
 void draw() {
-    int size = hamilton_dry.getRowCount();
     if(plotPath(russel_dry, size)) {
         noLoop();
     }
+    plotBarChart(hd_bar, 1);
 }
