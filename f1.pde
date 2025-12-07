@@ -42,6 +42,9 @@ Pair<float[], int[]> all_bar;
 float dist_max, dist_min;
 int brake_max;
 
+boolean flag;
+Pair<float[], float[]> bar_heights;
+
 void settings() {
     // int page_height = 1000;
     // size(int(sqrt(2) * page_height), page_height);
@@ -98,14 +101,26 @@ void setup() {
     // Initialise animation frame indices
     track_index = 0;
     ratio = 0;
+    flag = false;
 }
 
 void draw() {
     if(plotPath(hamilton_dry, size)) {
         noLoop();
     }
-    plotBarChart(hd_bar, ratio);
+
+    if (!flag) {
+        bar_heights = plotBarChart(hd_bar, ratio);
+    }
+    else {
+        collapseBarChart(bar_heights, ratio);
+    }
+
     if (ratio < 1) {
         ratio += 0.1;
+    }
+    else if (!flag) {
+        ratio = 0;
+        flag = true;
     }
 }
