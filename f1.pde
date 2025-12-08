@@ -12,6 +12,8 @@ PFont f1_font;
 String[] drivers;
 
 // Pixel coordinates for sections
+int border;
+
 int map_width_left, map_width_right;
 int map_height_bottom, map_height_top;
 
@@ -21,8 +23,8 @@ int bar_height_bottom, bar_height_top;
 int button_width_left, button_width_right;
 int button_height_bottom, button_height_top;
 
-// Number of bars in bar chart
-int bin_nums = 10;
+int line_width_left, line_width_right;
+int line_height_bottom, line_height_top;
 
 // Tables from csv
 Table hamilton_dry;
@@ -53,6 +55,24 @@ float dist_max, dist_min;
 int brake_max;
 
 Pair<float[], float[]> bar_heights;
+
+// Number of bars in bar chart
+int bin_nums = 10;
+
+// Line chart values
+Pair<float[], float[]> hd_line;
+Pair<float[], float[]> hw_line;
+Pair<float[], float[]> ld_line;
+Pair<float[], float[]> lw_line;
+Pair<float[], float[]> td_line;
+Pair<float[], float[]> tw_line;
+Pair<float[], float[]> rd_line;
+Pair<float[], float[]> rw_line;
+Pair<float[], float[]> all_line;
+float speed_max, speed_min;
+
+// Number of points in line chart
+int point_nums = 10;
 
 // Button control variables
 ArrayList<float[]> buttons = new ArrayList<>();
@@ -109,15 +129,43 @@ void setup() {
     dist_min = min(all_bar.first);
     brake_max = max(all_bar.second);
 
+    // Load line chart data
+    hd_line = getLineValues(hamilton_dry, size);
+    hw_line = getLineValues(hamilton_wet, size);
+    ld_line = getLineValues(leclerc_dry, size);
+    lw_line = getLineValues(leclerc_wet, size);
+    td_line = getLineValues(tsunoda_dry, size);
+    tw_line = getLineValues(tsunoda_wet, size);
+    rd_line = getLineValues(russell_dry, size);
+    rw_line = getLineValues(russell_wet, size);
+    all_line = new Pair<>(new float[0], new float[0]);
+    all_line = new Pair<>(concat(all_line.first, hd_line.first), concat(all_line.second, hd_line.second));
+    all_line = new Pair<>(concat(all_line.first, hw_line.first), concat(all_line.second, hw_line.second));
+    all_line = new Pair<>(concat(all_line.first, ld_line.first), concat(all_line.second, ld_line.second));
+    all_line = new Pair<>(concat(all_line.first, lw_line.first), concat(all_line.second, lw_line.second));
+    all_line = new Pair<>(concat(all_line.first, td_line.first), concat(all_line.second, td_line.second));
+    all_line = new Pair<>(concat(all_line.first, tw_line.first), concat(all_line.second, tw_line.second));
+    all_line = new Pair<>(concat(all_line.first, rd_line.first), concat(all_line.second, rd_line.second));
+    all_line = new Pair<>(concat(all_line.first, rw_line.first), concat(all_line.second, rw_line.second));
+
+    // Set Line chart range
+    speed_min = min(all_line.second);
+    speed_max = max(all_line.second);
+
     // Set section dimensions
-    map_width_left = 100; map_width_right = (2 * width / 3) - 100;
-    map_height_bottom = 7 * height / 12 - 50; map_height_top = 50;
+    border = 100;
+
+    map_width_left = border; map_width_right = (2 * width / 3) - border;
+    map_height_bottom = 7 * height / 12 - border; map_height_top = border;
 
     bar_width_left = map_width_left; bar_width_right = width / 2 + bar_width_left;
     bar_height_bottom = height - map_height_top; bar_height_top = map_height_bottom + map_height_top;
 
-    button_width_left = map_width_right + 200; button_width_right = width - 100;
+    button_width_left = map_width_right + 2 * border; button_width_right = width - border;
     button_height_bottom = map_height_bottom; button_height_top = map_height_top;
+
+    line_width_left = bar_width_right + border; line_width_right = width - border;
+    line_height_bottom = bar_height_bottom; line_height_top = bar_height_top;
 
     // Initialise animation frame indices
     track_index = 0;
@@ -143,47 +191,72 @@ void draw() {
     else drivers[4] = "Wet";
 
     if (building) {
-        bar_heights = plotBarChart(hd_bar, ratio);
         switch(selection) {
             case 0:
-                if(is_dry)
+                plotLineGraph(hd_line, hw_line, ratio);
+                if(is_dry) {
                     plotPath(hamilton_dry, size);
-                else
+                    bar_heights = plotBarChart(hd_bar, ratio);
+                }
+                else {
                     plotPath(hamilton_wet, size);
+                    bar_heights = plotBarChart(hw_bar, ratio);
+                }
                 break;
             
             case 1:
-                if(is_dry)
+                plotLineGraph(ld_line, lw_line, ratio);
+                if(is_dry) {
                     plotPath(leclerc_dry, size);
-                else
+                    bar_heights = plotBarChart(ld_bar, ratio);
+                }
+                else {
                     plotPath(leclerc_wet, size);
+                    bar_heights = plotBarChart(lw_bar, ratio);
+                }
                 break;
 
             case 2:
-                if(is_dry)
+                plotLineGraph(td_line, tw_line, ratio);
+                if(is_dry) {
                     plotPath(tsunoda_dry, size);
-                else
+                    bar_heights = plotBarChart(td_bar, ratio);
+                }
+                else {
                     plotPath(tsunoda_wet, size);
+                    bar_heights = plotBarChart(tw_bar, ratio);
+                }
                 break;
 
             case 3:
-                if(is_dry)
+                plotLineGraph(rd_line, rw_line, ratio);
+                if(is_dry) {
                     plotPath(russell_dry, size);
-                else
+                    bar_heights = plotBarChart(rd_bar, ratio);
+                }
+                else {
                     plotPath(russell_wet, size);
+                    bar_heights = plotBarChart(rw_bar, ratio);
+                }
                 break;
 
             default:
-                if(is_dry)
+                plotLineGraph(hd_line, hw_line, ratio);
+                if(is_dry) {
                     plotPath(hamilton_dry, size);
-                else
+                    bar_heights = plotBarChart(hd_bar, ratio);
+                }
+                else {
                     plotPath(hamilton_wet, size);
+                    bar_heights = plotBarChart(hw_bar, ratio);
+                }
                 break;
         }
     }
 
     else {
         collapseBarChart(bar_heights, ratio);
+        collapseLineGraph(ratio);
         stroke(background);
         fill(background);
         rectMode(CORNERS);

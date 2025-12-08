@@ -1,94 +1,3 @@
-void plotMap(Table driver_table, int size) {
-    float offset = 250;
-    float[] x = new float[size + 1];
-    float[] y = new float[size + 1];
-    float[] lx = new float[size + 1];
-    float[] ly = new float[size + 1];
-    float[] rx = new float[size + 1];
-    float[] ry = new float[size + 1];
-    for (int i = 0; i < size; i++) {
-        float curr_x = driver_table.getFloat(i, "X");
-        float curr_y = driver_table.getFloat(i, "Y");
-        if (!Float.isNaN(curr_x) && !Float.isNaN(curr_y) && int(curr_x) != 0) {
-            x[i] = driver_table.getFloat(i, "X");
-            y[i] = driver_table.getFloat(i, "Y");
-        }
-    }
-
-    int it = 0;
-    while (int(x[it]) == 0) {
-        it++;
-        if (int(x[it]) != 0) {
-            continue;
-        }
-        int it2 = it;
-        while (it2 >= 0) {
-            x[it2] = x[it];
-            y[it2] = y[it];
-            it2--;
-        }
-        x[size] = x[0];
-        y[size] = y[0];
-    }
-        
-
-    for (int i = 0; i < size; i++) {
-        float dx = x[i+1] - x[i];
-        float dy = y[i+1] - y[i];
-
-        float len = sqrt(dx*dx + dy*dy);
-        if (len == 0) {
-            try{
-                lx[i] = lx[i - 1];
-                ly[i] = ly[i - 1];
-                rx[i] = rx[i - 1];
-                ry[i] = ry[i - 1];
-                continue;
-            }
-            catch (Exception e) {
-                continue;
-            }
-        }
-        float nx = -dy / len;
-        float ny = dx / len;
-
-        lx[i] = x[i] + nx * offset;
-        ly[i] = y[i] + ny * offset;
-        rx[i] = x[i] - nx * offset;
-        ry[i] = y[i] - ny * offset;
-    }
-    lx[0] = lx[1];
-    ly[0] = ly[1];
-    lx[size] = lx[0];
-    ly[size] = ly[0];
-    rx[0] = rx[1];
-    ry[0] = ry[1];
-    rx[size] = rx[0];
-    ry[size] = ry[0];
-
-    stroke(accent);
-    fill(background);
-    strokeWeight(1);
-    float minx = min(x), miny = min(y), maxx = max(x), maxy = max(y);
-
-    beginShape();
-    for (int i = 0; i < size; i++) {
-        float lx_point = map(lx[i], minx, maxx, map_width_left, map_width_right);
-        float ly_point = map(ly[i], miny, maxy, map_height_bottom, map_height_top);
-        curveVertex(lx_point, ly_point);
-    }
-    endShape(CLOSE);
-
-    stroke(accent);
-    fill(background);
-    beginShape();
-    for (int i = 0; i < size; i++) {
-        float rx_point = map(rx[i], minx, maxx, map_width_left, map_width_right);
-        float ry_point = map(ry[i], miny, maxy, map_height_bottom, map_height_top);
-        curveVertex(rx_point, ry_point);
-    }
-    endShape(CLOSE);
-}
 
 boolean plotPath(Table driver_table, int size) {
     float[] x = new float[size + 1];
@@ -215,4 +124,52 @@ void collapseBarChart(Pair<float[], float[]> pair, float ratio) {
         fill(primary2);
         rect(bar_left, bar_height_bottom, bar_left + bar_width, bar_height_bottom - brake_height);
     }
+}
+
+void plotLineGraph(Pair<float[], float[]> paird, Pair<float[], float[]> pairw, float ratio) {
+    float[] mapped_xd = new float[point_nums];
+    float[] mapped_yd = new float[point_nums];
+
+    float[] mapped_xw = new float[point_nums];
+    float[] mapped_yw = new float[point_nums];
+
+    float time_mind = min(paird.first), time_maxd = max(paird.first);
+    float time_minw = min(pairw.first), time_maxw = max(pairw.first);
+
+    for (int i = 0; i < point_nums; i++) {
+        mapped_xd[i] = map(paird.first[i], time_mind, time_maxd, line_width_left, line_width_right);
+        mapped_yd[i] = map(paird.second[i], speed_max, speed_min, line_height_bottom, line_height_top);
+        mapped_xw[i] = map(pairw.first[i], time_minw, time_maxw, line_width_left, line_width_right);
+        mapped_yw[i] = map(pairw.second[i], speed_max, speed_min, line_height_bottom, line_height_top);
+    }
+
+    int subdivisions = 100;
+    int done = 0;
+    for (int i = 0; i < point_nums - 1; i++) {
+        for (int j = 0; j < subdivisions; j++) {
+            if(done >= max(0, int(ratio * (point_nums - 1) * subdivisions))) {
+                return;
+            }
+
+            float segment = j / float(subdivisions);
+            float xd = lerp(mapped_xd[i], mapped_xd[i+1], segment);
+            float yd = lerp(mapped_yd[i], mapped_yd[i+1], segment);
+            float xw = lerp(mapped_xw[i], mapped_xw[i+1], segment);
+            float yw = lerp(mapped_yw[i], mapped_yw[i+1], segment);
+
+            strokeWeight(5);
+            stroke(primary2);
+            line(xd, yd, xd, yd);
+            stroke(primary1);
+            line(xw, yw, xw, yw);
+            done++;
+        }
+    }
+}
+
+void collapseLineGraph(float ratio) {
+    fill(background);
+    stroke(background);
+    rectMode(CORNERS);
+    rect(line_width_right + 1, line_height_bottom + 1, line_width_right - ratio * abs(line_width_right - line_width_left) - 1, line_height_top - 1);
 }

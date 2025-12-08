@@ -27,3 +27,22 @@ Pair<float[], int[]> getBarValues(Table driver_table, int size) {
     Pair<float[], int[]> pair = new Pair<>(dist, brake_freq);
     return pair;
 }
+
+Pair<float[], float[]> getLineValues(Table driver_table, int size) {
+    int avgd_points = int(size / point_nums);
+    float[] time = new float[point_nums];
+    float[] speed = new float[point_nums];
+    for (int i = 0; i < point_nums; i++) {
+        float time_sum = 0;
+        float speed_sum = 0;
+        for (int j = 0; j < avgd_points; j++) {
+            time_sum += driver_table.getFloat(i * avgd_points + j, "Time");
+            speed_sum += driver_table.getFloat(i * avgd_points + j, "Speed");
+        }
+        time[i] = time_sum / avgd_points;
+        speed[i] = speed_sum / avgd_points;
+    }
+
+    Pair<float[], float[]> pair = new Pair<>(time, speed);
+    return pair;
+}
