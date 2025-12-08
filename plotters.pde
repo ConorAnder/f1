@@ -183,6 +183,7 @@ Pair<float[], float[]> plotBarChart(Pair<float[], int[]> pair, float ratio) {
 
         float bar_width = (bar_width_right - bar_width_left) / bin_nums;
         float bar_left = bar_width_left + i * bar_width;
+        strokeWeight(3);
         stroke(stroke);
         fill(primary1);
         rect(bar_left, bar_height_bottom, bar_left + bar_width, bar_height_bottom - dist_height);
@@ -195,6 +196,7 @@ Pair<float[], float[]> plotBarChart(Pair<float[], int[]> pair, float ratio) {
 }
 
 void collapseBarChart(Pair<float[], float[]> pair, float ratio) {
+    strokeWeight(3);
     stroke(background);
     fill(background);
     rectMode(CORNERS);

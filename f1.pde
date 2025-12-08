@@ -1,9 +1,12 @@
 // Colour pallette
-color background = color(13, 31, 45);
+color background = color(13, 31, 60);
 color primary1 = color(68, 255, 210);
-color primary2 = color(238, 108, 77);
+color primary2 = color(255, 20, 0);
 color accent = color(255, 221, 74);
 color stroke = color(119, 135, 139);
+
+// Font
+PFont f1_font;
 
 // Pixel coordinates for sections
 int map_width_left, map_width_right;
@@ -11,6 +14,9 @@ int map_height_bottom, map_height_top;
 
 int bar_width_left, bar_width_right;
 int bar_height_bottom, bar_height_top;
+
+int button_width_left, button_width_right;
+int button_height_bottom, button_height_top;
 
 // Number of bars in bar chart
 int bin_nums = 10;
@@ -22,8 +28,8 @@ Table leclerc_dry;
 Table leclerc_wet;
 Table tsunoda_dry;
 Table tsunoda_wet;
-Table russel_dry;
-Table russel_wet;
+Table russell_dry;
+Table russell_wet;
 
 // Animation frame indices
 int track_index, size;
@@ -53,6 +59,7 @@ void settings() {
 
 void setup() {
     background(background);
+    f1_font = createFont("Formula1-Regular.ttf", 32);
 
     // Load csvs into tables
     hamilton_dry = loadTable("hamilton_dry.csv", "header");
@@ -61,8 +68,8 @@ void setup() {
     leclerc_wet = loadTable("leclerc_wet.csv", "header");
     tsunoda_dry = loadTable("tsunoda_dry.csv", "header");
     tsunoda_wet = loadTable("tsunoda_wet.csv", "header");
-    russel_dry = loadTable("russel_dry.csv", "header");
-    russel_wet = loadTable("russel_wet.csv", "header");
+    russell_dry = loadTable("russell_dry.csv", "header");
+    russell_wet = loadTable("russell_wet.csv", "header");
 
     // Get number of samples
     size = hamilton_dry.getRowCount();
@@ -74,8 +81,8 @@ void setup() {
     lw_bar = getBarValues(leclerc_wet, size);
     td_bar = getBarValues(tsunoda_dry, size);
     tw_bar = getBarValues(tsunoda_wet, size);
-    rd_bar = getBarValues(russel_dry, size);
-    rw_bar = getBarValues(russel_wet, size);
+    rd_bar = getBarValues(russell_dry, size);
+    rw_bar = getBarValues(russell_wet, size);
     all_bar = new Pair<>(new float[0], new int[0]);
     all_bar = new Pair<>(concat(all_bar.first, hd_bar.first), concat(all_bar.second, hd_bar.second));
     all_bar = new Pair<>(concat(all_bar.first, hw_bar.first), concat(all_bar.second, hw_bar.second));
@@ -92,16 +99,24 @@ void setup() {
     brake_max = max(all_bar.second);
 
     // Set section dimensions
-    map_width_left = 100; map_width_right = 2 * width / 3;
+    map_width_left = 100; map_width_right = (2 * width / 3) - 100;
     map_height_bottom = 7 * height / 12 - 50; map_height_top = 50;
 
     bar_width_left = map_width_left; bar_width_right = width / 2 + bar_width_left;
     bar_height_bottom = height - map_height_top; bar_height_top = map_height_bottom + map_height_top;
 
+    button_width_left = map_width_right + 200; button_width_right = width - 100;
+    button_height_bottom = map_height_bottom; button_height_top = map_height_top;
+
     // Initialise animation frame indices
     track_index = 0;
     ratio = 0;
     flag = false;
+
+    // Initialise buttons
+    fill(primary2);
+    stroke(primary2);
+    initButtons();
 }
 
 void draw() {
@@ -119,8 +134,8 @@ void draw() {
     if (ratio < 1) {
         ratio += 0.1;
     }
-    else if (!flag) {
-        ratio = 0;
-        flag = true;
-    }
+    // else if (!flag) {
+    //     ratio = 0;
+    //     flag = true;
+    // }
 }
