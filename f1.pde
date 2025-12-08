@@ -37,6 +37,7 @@ Table russell_wet;
 // Animation frame indices
 int track_index, size;
 float ratio;
+boolean building;
 
 // Bar chart values
 Pair<float[], int[]> hd_bar;
@@ -51,7 +52,6 @@ Pair<float[], int[]> all_bar;
 float dist_max, dist_min;
 int brake_max;
 
-boolean flag;
 Pair<float[], float[]> bar_heights;
 
 // Button control variables
@@ -122,7 +122,7 @@ void setup() {
     // Initialise animation frame indices
     track_index = 0;
     ratio = 0;
-    flag = false;
+    building = true;
 
     // Initialise buttons
     float button_height = (button_height_bottom - button_height_top) / 9.0;
@@ -142,24 +142,62 @@ void draw() {
     if (is_dry) drivers[4] = "Dry";
     else drivers[4] = "Wet";
 
-    if(plotPath(hamilton_dry, size)) {
-        select(2);
-        //noLoop();
+    if (building) {
+        bar_heights = plotBarChart(hd_bar, ratio);
+        switch(selection) {
+            case 0:
+                if(is_dry)
+                    plotPath(hamilton_dry, size);
+                else
+                    plotPath(hamilton_wet, size);
+                break;
+            
+            case 1:
+                if(is_dry)
+                    plotPath(leclerc_dry, size);
+                else
+                    plotPath(leclerc_wet, size);
+                break;
+
+            case 2:
+                if(is_dry)
+                    plotPath(tsunoda_dry, size);
+                else
+                    plotPath(tsunoda_wet, size);
+                break;
+
+            case 3:
+                if(is_dry)
+                    plotPath(russell_dry, size);
+                else
+                    plotPath(russell_wet, size);
+                break;
+
+            default:
+                if(is_dry)
+                    plotPath(hamilton_dry, size);
+                else
+                    plotPath(hamilton_wet, size);
+                break;
+        }
     }
 
-    if (!flag) {
-        bar_heights = plotBarChart(hd_bar, ratio);
-    }
     else {
         collapseBarChart(bar_heights, ratio);
+        stroke(background);
+        fill(background);
+        rectMode(CORNERS);
+        rect(map_width_left, map_height_bottom, ratio * map_width_right, map_height_top);
+        if (ratio >= 1) {
+            ratio = 0;
+            building = true;
+            track_index = 0;
+        }
     }
 
     if (ratio < 1) {
-        ratio += 0.1;
+        ratio += 0.05;
     }
+
     hover();
-    // else if (!flag) {
-    //     ratio = 0;
-    //     flag = true;
-    // }
 }

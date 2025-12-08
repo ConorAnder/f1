@@ -1,43 +1,43 @@
 void select(int selection) {
     switch (selection) {
         case 0:
-            plotButton(0, primary2, "Hamilton", primary1);
-            plotButton(1, primary1, "Leclerc", primary2);
-            plotButton(2, primary1, "Tsunoda", primary2);
-            plotButton(3, primary1, "Russell", primary2);
-            plotButton(4, accent, "Dry", primary2);
+            plotButton(0, primary2, drivers[0], primary1);
+            plotButton(1, primary1, drivers[1], primary2);
+            plotButton(2, primary1, drivers[2], primary2);
+            plotButton(3, primary1, drivers[3], primary2);
+            plotButton(4, accent, drivers[4], primary2);
             break;
 
         case 1:
-            plotButton(0, primary1, "Hamilton", primary2);
-            plotButton(1, primary2, "Leclerc", primary1);
-            plotButton(2, primary1, "Tsunoda", primary2);
-            plotButton(3, primary1, "Russell", primary2);
-            plotButton(4, accent, "Dry", primary2);
+            plotButton(0, primary1, drivers[0], primary2);
+            plotButton(1, primary2, drivers[1], primary1);
+            plotButton(2, primary1, drivers[2], primary2);
+            plotButton(3, primary1, drivers[3], primary2);
+            plotButton(4, accent, drivers[4], primary2);
             break;
         
         case 2:
-            plotButton(0, primary1, "Hamilton", primary2);
-            plotButton(1, primary1, "Leclerc", primary2);
-            plotButton(2, primary2, "Tsunoda", primary1);
-            plotButton(3, primary1, "Russell", primary2);
-            plotButton(4, accent, "Dry", primary2);
+            plotButton(0, primary1, drivers[0], primary2);
+            plotButton(1, primary1, drivers[1], primary2);
+            plotButton(2, primary2, drivers[2], primary1);
+            plotButton(3, primary1, drivers[3], primary2);
+            plotButton(4, accent, drivers[4], primary2);
             break;
 
         case 3:
-            plotButton(0, primary1, "Hamilton", primary2);
-            plotButton(1, primary1, "Leclerc", primary2);
-            plotButton(2, primary1, "Tsunoda", primary2);
-            plotButton(3, primary2, "Russell", primary1);
-            plotButton(4, accent, "Dry", primary2);
+            plotButton(0, primary1, drivers[0], primary2);
+            plotButton(1, primary1, drivers[1], primary2);
+            plotButton(2, primary1, drivers[2], primary2);
+            plotButton(3, primary2, drivers[3], primary1);
+            plotButton(4, accent, drivers[4], primary2);
             break;
 
         default:
-            plotButton(0, primary2, "Hamilton", primary1);
-            plotButton(1, primary1, "Leclerc", primary2);
-            plotButton(2, primary1, "Tsunoda", primary2);
-            plotButton(3, primary1, "Russell", primary2);
-            plotButton(4, accent, "Dry", primary2);
+            plotButton(0, primary2, drivers[0], primary1);
+            plotButton(1, primary1, drivers[1], primary2);
+            plotButton(2, primary1, drivers[2], primary2);
+            plotButton(3, primary1, drivers[3], primary2);
+            plotButton(4, accent, drivers[4], primary2);
             break;
     }
 }
@@ -61,6 +61,19 @@ void hover() {
         if (isHovering(i) && selection != i) {
             plotButton(i, stroke, drivers[i], primary2);
             check = true;
+            if (mousePressed && i == 4) {
+                is_dry = !is_dry;
+                select(selection);
+                delay(200); // Debouncing
+                building = false;
+                ratio = 1 - ratio;
+            }
+            else if (mousePressed) {
+                selection = i;
+                select(selection);
+                building = false;
+                ratio = 1 - ratio;
+            }
         }
         else if (!check) {
             select(selection);
