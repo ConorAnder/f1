@@ -8,6 +8,9 @@ color stroke = color(119, 135, 139);
 // Font
 PFont f1_font;
 
+// Drivers
+String[] drivers;
+
 // Pixel coordinates for sections
 int map_width_left, map_width_right;
 int map_height_bottom, map_height_top;
@@ -51,6 +54,11 @@ int brake_max;
 boolean flag;
 Pair<float[], float[]> bar_heights;
 
+// Button control variables
+ArrayList<float[]> buttons = new ArrayList<>();
+int selection;
+boolean is_dry;
+
 void settings() {
     // int page_height = 1000;
     // size(int(sqrt(2) * page_height), page_height);
@@ -60,6 +68,9 @@ void settings() {
 void setup() {
     background(background);
     f1_font = createFont("Formula1-Regular.ttf", 32);
+
+    // Store driver names and track state
+    drivers = new String[]{"Hamilton", "Leclerc", "Tsunoda", "Russell", "Dry"};
 
     // Load csvs into tables
     hamilton_dry = loadTable("hamilton_dry.csv", "header");
@@ -114,14 +125,26 @@ void setup() {
     flag = false;
 
     // Initialise buttons
+    float button_height = (button_height_bottom - button_height_top) / 9.0;
+    selection = 0;
+    for (int i = 0; i < 9; i += 2) {
+        float current_height = button_height_top + i * button_height;
+        buttons.add(new float[]{button_width_left, current_height, button_width_right, current_height + button_height});
+    }
+    is_dry = true;
+
     fill(primary2);
     stroke(primary2);
-    initButtons();
+    select(0);
 }
 
 void draw() {
+    if (is_dry) drivers[4] = "Dry";
+    else drivers[4] = "Wet";
+
     if(plotPath(hamilton_dry, size)) {
-        noLoop();
+        select(2);
+        //noLoop();
     }
 
     if (!flag) {
@@ -134,6 +157,7 @@ void draw() {
     if (ratio < 1) {
         ratio += 0.1;
     }
+    hover();
     // else if (!flag) {
     //     ratio = 0;
     //     flag = true;
