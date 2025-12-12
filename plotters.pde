@@ -93,7 +93,7 @@ Pair<float[], float[]> plotBarChart(Pair<float[], int[]> pair, float ratio) {
         float bar_width = (bar_width_right - bar_width_left) / bin_nums;
         float bar_left = bar_width_left + i * bar_width;
         strokeWeight(3);
-        stroke(stroke);
+        stroke(accent);
         fill(primary1);
         rect(bar_left, bar_height_bottom, bar_left + bar_width, bar_height_bottom - dist_height);
 
@@ -117,7 +117,7 @@ void collapseBarChart(Pair<float[], float[]> pair, float ratio) {
 
         float bar_width = (bar_width_right - bar_width_left) / bin_nums;
         float bar_left = bar_width_left + i * bar_width;
-        stroke(stroke);
+        stroke(accent);
         fill(primary1);
         rect(bar_left, bar_height_bottom, bar_left + bar_width, bar_height_bottom - dist_height);
 
@@ -126,21 +126,66 @@ void collapseBarChart(Pair<float[], float[]> pair, float ratio) {
     }
 }
 
-void plotLineGraph(Pair<float[], float[]> paird, Pair<float[], float[]> pairw, float ratio) {
+void plotLineGrid(float ratio, Pair<float[], float[]> values) {
+    stroke(accent);
+    strokeWeight(3);
+    int box_nums = 4;
+    float graph_width = line_width_right - line_width_left;
+    float graph_height = line_height_bottom - line_height_top;
+    float box_width = graph_width / point_nums;
+    float box_height = graph_height / box_nums;
+
+    // Vertical gridlines
+    line(line_width_left - 2, line_height_bottom - 2, line_width_left - 2, line_height_top);
+    line(line_width_right + 10, line_height_bottom - 2, line_width_right + 10, line_height_top);
+
+    // Horizontal gridlines
+    strokeWeight(1);
+    line(line_width_right - ratio * graph_width - 2, line_height_bottom - 2, line_width_right + 10, line_height_bottom - 2);
+    for (int i = 0; i < box_nums; i++) {
+        line(line_width_right - ratio * graph_width - 2, line_height_top + i * box_height, line_width_right + 10, line_height_top + i * box_height);
+    }
+
+    // X axis markers
+    if (ratio == 1) {
+        fill(accent);
+        textAlign(CENTER);
+        textFont(graphing);
+        text("0:00", line_width_left, line_height_bottom + 20);
+        for (int i = 1; i <= point_nums; i++) {
+            float box_pos = line_width_left + i * box_width;
+            String marker, minutes, seconds;
+            if (values.first[point_nums - 1] > values.second[point_nums - 1]) {
+                minutes = str(int(values.first[i - 1]) / 60);
+                seconds = (int(values.first[i - 1]) % 60 < 10) ? "0" + str(int(values.first[i - 1]) % 60) : str(int(values.first[i - 1]) % 60);
+                marker = minutes + ":" + seconds;
+            }
+            else {
+                minutes = str(int(values.second[i - 1]) / 60);
+                seconds = (int(values.second[i - 1]) % 60 < 10) ? "0" + str(int(values.second[i - 1]) % 60) : str(int(values.second[i - 1]) % 60);
+                marker = minutes + ":" + seconds;
+            }
+
+            text(marker, box_pos, line_height_bottom + 20);
+        }
+    }
+}
+
+Pair<float[], float[]> plotLineGraph(Pair<float[], float[]> paird, Pair<float[], float[]> pairw, float ratio) {
     float[] mapped_xd = new float[point_nums];
     float[] mapped_yd = new float[point_nums];
 
     float[] mapped_xw = new float[point_nums];
     float[] mapped_yw = new float[point_nums];
 
-    float time_mind = min(paird.first), time_maxd = max(paird.first);
-    float time_minw = min(pairw.first), time_maxw = max(pairw.first);
+    float time_min = min(concat(paird.first, pairw.first)), time_max = max(concat(paird.first, pairw.first));
+    Pair<float[], float[]> time_pair = new Pair<float[], float[]>(pairw.first, paird.first);
 
     for (int i = 0; i < point_nums; i++) {
-        mapped_xd[i] = map(paird.first[i], time_mind, time_maxd, line_width_left, line_width_right);
-        mapped_yd[i] = map(paird.second[i], speed_max, speed_min, line_height_bottom, line_height_top);
-        mapped_xw[i] = map(pairw.first[i], time_minw, time_maxw, line_width_left, line_width_right);
-        mapped_yw[i] = map(pairw.second[i], speed_max, speed_min, line_height_bottom, line_height_top);
+        mapped_xd[i] = map(paird.first[i], time_min, time_max, line_width_left, line_width_right);
+        mapped_yd[i] = map(paird.second[i], speed_max, 0, line_height_top, line_height_bottom);
+        mapped_xw[i] = map(pairw.first[i], time_min, time_max, line_width_left, line_width_right);
+        mapped_yw[i] = map(pairw.second[i], speed_max, 0, line_height_top, line_height_bottom);
     }
 
     int subdivisions = 100;
@@ -148,7 +193,7 @@ void plotLineGraph(Pair<float[], float[]> paird, Pair<float[], float[]> pairw, f
     for (int i = 0; i < point_nums - 1; i++) {
         for (int j = 0; j < subdivisions; j++) {
             if(done >= max(0, int(ratio * (point_nums - 1) * subdivisions))) {
-                return;
+                return time_pair;
             }
 
             float segment = j / float(subdivisions);
@@ -165,11 +210,13 @@ void plotLineGraph(Pair<float[], float[]> paird, Pair<float[], float[]> pairw, f
             done++;
         }
     }
+    return time_pair;
 }
 
-void collapseLineGraph(float ratio) {
+void collapseLineGraph(float ratio, Pair<float[], float[]> graph) {
     fill(background);
     stroke(background);
     rectMode(CORNERS);
-    rect(line_width_right + 1, line_height_bottom + 1, line_width_right - ratio * abs(line_width_right - line_width_left) - 1, line_height_top - 1);
+    rect(width, height, line_width_right - ratio * abs(line_width_right - line_width_left) - 15, line_height_top - 1);
+    plotLineGrid(ratio, graph);
 }

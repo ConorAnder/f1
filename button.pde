@@ -5,7 +5,7 @@ void select(int selection) {
             plotButton(1, primary1, drivers[1], primary2);
             plotButton(2, primary1, drivers[2], primary2);
             plotButton(3, primary1, drivers[3], primary2);
-            plotButton(4, accent, drivers[4], primary2);
+            plotButton(4, secondary, drivers[4], primary2);
             break;
 
         case 1:
@@ -13,7 +13,7 @@ void select(int selection) {
             plotButton(1, primary2, drivers[1], primary1);
             plotButton(2, primary1, drivers[2], primary2);
             plotButton(3, primary1, drivers[3], primary2);
-            plotButton(4, accent, drivers[4], primary2);
+            plotButton(4, secondary, drivers[4], primary2);
             break;
         
         case 2:
@@ -21,7 +21,7 @@ void select(int selection) {
             plotButton(1, primary1, drivers[1], primary2);
             plotButton(2, primary2, drivers[2], primary1);
             plotButton(3, primary1, drivers[3], primary2);
-            plotButton(4, accent, drivers[4], primary2);
+            plotButton(4, secondary, drivers[4], primary2);
             break;
 
         case 3:
@@ -29,7 +29,7 @@ void select(int selection) {
             plotButton(1, primary1, drivers[1], primary2);
             plotButton(2, primary1, drivers[2], primary2);
             plotButton(3, primary2, drivers[3], primary1);
-            plotButton(4, accent, drivers[4], primary2);
+            plotButton(4, secondary, drivers[4], primary2);
             break;
 
         default:
@@ -37,14 +37,14 @@ void select(int selection) {
             plotButton(1, primary1, drivers[1], primary2);
             plotButton(2, primary1, drivers[2], primary2);
             plotButton(3, primary1, drivers[3], primary2);
-            plotButton(4, accent, drivers[4], primary2);
+            plotButton(4, secondary, drivers[4], primary2);
             break;
     }
 }
 
 void plotButton(int num, color fill, String driver, color text) {
     rectMode(CORNERS);
-    stroke(stroke);
+    stroke(accent);
     strokeWeight(3);
     textFont(f1_font);
     textSize(30);

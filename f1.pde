@@ -2,11 +2,13 @@
 color background = color(13, 31, 60);
 color primary1 = color(68, 255, 210);
 color primary2 = color(255, 20, 0);
-color accent = color(255, 221, 74);
-color stroke = color(119, 135, 139);
+color secondary = color(255, 221, 74);
+color accent = color(120, 120, 120);
+color stroke = color(200, 200, 200);
 
-// Font
+// Fonts
 PFont f1_font;
+PFont graphing;
 
 // Drivers
 String[] drivers;
@@ -71,6 +73,8 @@ Pair<float[], float[]> rw_line;
 Pair<float[], float[]> all_line;
 float speed_max, speed_min;
 
+Pair<float[], float[]> line_graph;
+
 // Number of points in line chart
 int point_nums = 10;
 
@@ -88,6 +92,7 @@ void settings() {
 void setup() {
     background(background);
     f1_font = createFont("Formula1-Regular.ttf", 32);
+    graphing = createFont("Arial", 15);
 
     // Store driver names and track state
     drivers = new String[]{"Hamilton", "Leclerc", "Tsunoda", "Russell", "Dry"};
@@ -181,6 +186,8 @@ void setup() {
     }
     is_dry = true;
 
+    plotLineGrid(1, hw_line);
+
     fill(primary2);
     stroke(primary2);
     select(0);
@@ -193,7 +200,7 @@ void draw() {
     if (building) {
         switch(selection) {
             case 0:
-                plotLineGraph(hd_line, hw_line, ratio);
+                line_graph = plotLineGraph(hd_line, hw_line, ratio);
                 if(is_dry) {
                     plotPath(hamilton_dry, size);
                     bar_heights = plotBarChart(hd_bar, ratio);
@@ -205,7 +212,7 @@ void draw() {
                 break;
             
             case 1:
-                plotLineGraph(ld_line, lw_line, ratio);
+                line_graph = plotLineGraph(ld_line, lw_line, ratio);
                 if(is_dry) {
                     plotPath(leclerc_dry, size);
                     bar_heights = plotBarChart(ld_bar, ratio);
@@ -217,7 +224,7 @@ void draw() {
                 break;
 
             case 2:
-                plotLineGraph(td_line, tw_line, ratio);
+                line_graph = plotLineGraph(td_line, tw_line, ratio);
                 if(is_dry) {
                     plotPath(tsunoda_dry, size);
                     bar_heights = plotBarChart(td_bar, ratio);
@@ -229,7 +236,7 @@ void draw() {
                 break;
 
             case 3:
-                plotLineGraph(rd_line, rw_line, ratio);
+                line_graph = plotLineGraph(rd_line, rw_line, ratio);
                 if(is_dry) {
                     plotPath(russell_dry, size);
                     bar_heights = plotBarChart(rd_bar, ratio);
@@ -241,7 +248,7 @@ void draw() {
                 break;
 
             default:
-                plotLineGraph(hd_line, hw_line, ratio);
+                line_graph = plotLineGraph(hd_line, hw_line, ratio);
                 if(is_dry) {
                     plotPath(hamilton_dry, size);
                     bar_heights = plotBarChart(hd_bar, ratio);
@@ -256,11 +263,11 @@ void draw() {
 
     else {
         collapseBarChart(bar_heights, ratio);
-        collapseLineGraph(ratio);
+        collapseLineGraph(ratio, line_graph);
         stroke(background);
         fill(background);
         rectMode(CORNERS);
-        rect(map_width_left, map_height_bottom, ratio * map_width_right, map_height_top);
+        rect(map_width_left -2, map_height_bottom + 2, ratio * map_width_right + 2, map_height_top - 2);
         if (ratio >= 1) {
             ratio = 0;
             building = true;
