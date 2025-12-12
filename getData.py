@@ -2,6 +2,7 @@ import fastf1 as f1
 import pandas as pd
 import numpy as np
 
+# Processing needs any tables or fonts to be in a folder called data
 filepath = './data/'
 num_samples = 300
 

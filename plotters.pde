@@ -1,4 +1,3 @@
-
 boolean plotPath(Table driver_table, int size) {
     float[] x = new float[size + 1];
     float[] y = new float[size + 1];
