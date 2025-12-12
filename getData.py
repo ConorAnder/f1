@@ -24,11 +24,13 @@ def build_csv(year, driver, filename, dist_grid=None):
     pos = curr_lap.get_pos_data()
     tel = pd.merge_asof(car, pos, on='Time')
 
+    # Interpolate data based on two factors, distance and time
     if dist_grid is None:
         dist_grid = np.linspace(tel['Distance'].min(), tel['Distance'].max(), num_samples)
     
     time_grid = np.linspace(tel['Time'].dt.total_seconds().min(), tel['Time'].dt.total_seconds().max(), num_samples)
 
+    # Store the data as a pandas dataframe to be converted into a csv file later
     data = pd.DataFrame({
          'Driver': driver,
         'Distance': np.interp(time_grid, tel['Time'].dt.total_seconds(), tel['Distance']).round(1),
@@ -41,7 +43,7 @@ def build_csv(year, driver, filename, dist_grid=None):
     })
 
     data.to_csv(filename, index=False)
-    return dist_grid
+    return dist_grid    # return grid to interpolate all tables with the same reference
 
 def rain_duration(lap, weather):
     start = lap['LapStartTime']

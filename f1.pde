@@ -209,9 +209,11 @@ void setup() {
 }
 
 void draw() {
+    // Wet / Dry button output
     if (is_dry) drivers[4] = "Dry";
     else drivers[4] = "Wet";
 
+    // Building phase is when charts are being formed as opposed to collapsed
     if (building) {
         switch(selection) {
             case 0:
@@ -276,6 +278,7 @@ void draw() {
         }
     }
 
+    // Collapsing phase
     else {
         collapseBarChart(bar_heights, ratio);
         collapseLineGraph(ratio, line_graph);
@@ -288,9 +291,11 @@ void draw() {
         }
     }
 
+    // Stage of building / collapsing
     if (ratio < 1) {
         ratio += 0.05;
     }
 
+    // Button interactions start here
     hover();
 }
