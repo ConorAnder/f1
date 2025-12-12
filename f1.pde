@@ -74,6 +74,7 @@ Pair<float[], float[]> all_line;
 float speed_max, speed_min;
 
 Pair<float[], float[]> line_graph;
+String[] markers;
 
 // Number of points in line chart
 int point_nums = 10;
@@ -84,8 +85,6 @@ int selection;
 boolean is_dry;
 
 void settings() {
-    // int page_height = 1000;
-    // size(int(sqrt(2) * page_height), page_height);
     fullScreen();
 }
 
@@ -163,7 +162,7 @@ void setup() {
     map_width_left = border; map_width_right = (2 * width / 3) - border;
     map_height_bottom = 7 * height / 12 - border; map_height_top = border;
 
-    bar_width_left = map_width_left; bar_width_right = width / 2 + bar_width_left;
+    bar_width_left = int(1.5 * map_width_left); bar_width_right = width / 2 + bar_width_left;
     bar_height_bottom = height - map_height_top; bar_height_top = map_height_bottom + map_height_top;
 
     button_width_left = map_width_right + 2 * border; button_width_right = width - border;
@@ -186,8 +185,19 @@ void setup() {
     }
     is_dry = true;
 
-    plotLineGrid(1, hw_line);
 
+    // Line plot graphing
+    plotLineTitles();
+    markers = plotLineGrid(1, hw_line);
+
+    // Bar chart graphing
+    stroke(accent);
+    strokeWeight(3);
+    line(bar_width_left, bar_height_bottom, bar_width_left, bar_height_top);
+    plotBarTitles();
+    plotBarMarkers();
+
+    // Initial button selection
     fill(primary2);
     stroke(primary2);
     select(0);
@@ -272,6 +282,7 @@ void draw() {
             ratio = 0;
             building = true;
             track_index = 0;
+            plotBarMarkers();
         }
     }
 

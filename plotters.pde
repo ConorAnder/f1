@@ -79,6 +79,67 @@ boolean plotPath(Table driver_table, int size) {
     return false;
 }
 
+void plotBarTitles() {
+    float bar_height = bar_height_bottom - bar_height_top;
+    float bar_width = bar_width_right - bar_width_left;
+
+    // Braking note
+    textAlign(LEFT);
+    textFont(f1_font, 15);
+    fill(primary2);
+    stroke(primary2);
+    strokeWeight(5);
+    text("Distance travelled while braking", bar_width_left, bar_height_bottom + 65);
+    line(bar_width_left - 25, bar_height_bottom + 58, bar_width_left - 10, bar_height_bottom + 58);
+
+    textAlign(CENTER);
+    textFont(f1_font);
+    fill(255, 255, 255);
+
+    // X axis title
+    text("Time Segment", bar_width_left + bar_width / 2, bar_height_bottom + 70);
+
+    // Y axis title
+    float x = bar_width_left - 45;
+    float y = bar_height_bottom - bar_height / 2;
+    pushMatrix();
+    translate(x, y);
+    rotate(-HALF_PI);
+    text("Distance [m]", 0, 0);
+    popMatrix();
+}
+
+void plotBarMarkers() {  
+    float bin_width = (bar_width_right - bar_width_left) / bin_nums;
+    textFont(graphing, 15);
+    textAlign(CENTER);
+    fill(accent);
+    
+    // X axis
+    text("0:00", bar_width_left, bar_height_bottom + 20);
+    for (int i = 0; i < bin_nums; i++) {
+        text(markers[i], bar_width_left + (i + 1) * bin_width, bar_height_bottom + 20);
+    }
+
+     // Y axis
+    textFont(graphing, 15);
+    fill(accent);
+    stroke(accent);
+    strokeWeight(3);
+    float bin_height = bar_height_bottom - bar_height_top;
+    for (int i = 0; i <= 4; i++) {
+        float x = bar_width_left - 15;
+        float y = bar_height_bottom - i * (bin_height / 4);
+        line(bar_width_left - 5, y, bar_width_left + 5, y);
+
+        pushMatrix();
+        translate(x, y);
+        rotate(-HALF_PI);
+        text(str(int(0.25 * i * hamilton_dry.getFloat(hamilton_dry.getRowCount() - 1, "Distance"))), 0, 0);
+        popMatrix();
+    }
+}
+
 Pair<float[], float[]> plotBarChart(Pair<float[], int[]> pair, float ratio) {
     rectMode(CORNERS);
     float[] dist_heights = new float[size];
@@ -109,7 +170,10 @@ void collapseBarChart(Pair<float[], float[]> pair, float ratio) {
     stroke(background);
     fill(background);
     rectMode(CORNERS);
-    rect(bar_width_left, bar_height_bottom, bar_width_right, bar_height_top);
+    rect(bar_width_left - 30, bar_height_bottom + 25, bar_width_right + 20, bar_height_top - 20);
+    stroke(accent);
+    strokeWeight(3);
+    line(bar_width_left, bar_height_bottom, bar_width_left, bar_height_top);
 
     for (int i = 0; i < bin_nums; i++) {
         float dist_height = (1 - ratio) * pair.first[i];
@@ -126,7 +190,42 @@ void collapseBarChart(Pair<float[], float[]> pair, float ratio) {
     }
 }
 
-void plotLineGrid(float ratio, Pair<float[], float[]> values) {
+void plotLineTitles() {
+    // X axis title
+    textFont(f1_font);
+    textAlign(CENTER);
+    text("Lap Time", line_width_left + (line_width_right - line_width_left) / 2, line_height_bottom + 70);
+
+    // Y axis title (rotated)
+    float x = line_width_left - 50;
+    float y = (line_height_bottom + line_height_top) / 2;
+    pushMatrix();
+    translate(x, y);
+    rotate(-HALF_PI);
+    text("Speed [km/h]", 0, 0);
+    popMatrix();
+
+    // Legend
+    float graph_width = line_width_right - line_width_left;
+    float legend_height = line_height_top - 20;
+    float box_width = graph_width / 3;
+
+    textFont(f1_font, 30);
+    fill(primary2);
+    textAlign(CENTER);
+    text("Dry", line_width_left + box_width, legend_height);
+    strokeWeight(10);
+    stroke(primary2);
+    line(line_width_left + box_width + 40, legend_height - 10, line_width_left + box_width + 55, legend_height - 10);
+
+    fill(primary1);
+    textAlign(CENTER);
+    text("Wet", line_width_left + 2 * box_width, legend_height);
+    stroke(primary1);
+    line(line_width_left + 2 * box_width + 45, legend_height - 10, line_width_left + 2 * box_width + 60, legend_height - 10);
+}
+
+String[] plotLineGrid(float ratio, Pair<float[], float[]> values) {
     stroke(accent);
     strokeWeight(3);
     int box_nums = 4;
@@ -134,6 +233,7 @@ void plotLineGrid(float ratio, Pair<float[], float[]> values) {
     float graph_height = line_height_bottom - line_height_top;
     float box_width = graph_width / point_nums;
     float box_height = graph_height / box_nums;
+    String[] markers = new String[10];
 
     // Vertical gridlines
     line(line_width_left - 2, line_height_bottom - 2, line_width_left - 2, line_height_top);
@@ -144,13 +244,27 @@ void plotLineGrid(float ratio, Pair<float[], float[]> values) {
     line(line_width_right - ratio * graph_width - 2, line_height_bottom - 2, line_width_right + 10, line_height_bottom - 2);
     for (int i = 0; i < box_nums; i++) {
         line(line_width_right - ratio * graph_width - 2, line_height_top + i * box_height, line_width_right + 10, line_height_top + i * box_height);
+
+        // Y axis markers
+        if (ratio == 1) {
+            fill(accent);
+            textAlign(CENTER);
+            textFont(graphing);
+            float x = line_width_left - 10;
+            float y = line_height_top + i * box_height;
+            pushMatrix();
+            translate(x, y);
+            rotate(-HALF_PI);
+            text(str(int(speed_max - i * 0.25 * speed_max)), 0, 0);
+            popMatrix();
+        }
     }
 
     // X axis markers
     if (ratio == 1) {
         fill(accent);
         textAlign(CENTER);
-        textFont(graphing);
+        textFont(graphing, 15);
         text("0:00", line_width_left, line_height_bottom + 20);
         for (int i = 1; i <= point_nums; i++) {
             float box_pos = line_width_left + i * box_width;
@@ -165,10 +279,11 @@ void plotLineGrid(float ratio, Pair<float[], float[]> values) {
                 seconds = (int(values.second[i - 1]) % 60 < 10) ? "0" + str(int(values.second[i - 1]) % 60) : str(int(values.second[i - 1]) % 60);
                 marker = minutes + ":" + seconds;
             }
-
+            markers[i-1] = marker;
             text(marker, box_pos, line_height_bottom + 20);
         }
     }
+    return markers;
 }
 
 Pair<float[], float[]> plotLineGraph(Pair<float[], float[]> paird, Pair<float[], float[]> pairw, float ratio) {
@@ -217,6 +332,6 @@ void collapseLineGraph(float ratio, Pair<float[], float[]> graph) {
     fill(background);
     stroke(background);
     rectMode(CORNERS);
-    rect(width, height, line_width_right - ratio * abs(line_width_right - line_width_left) - 15, line_height_top - 1);
-    plotLineGrid(ratio, graph);
+    rect(width - 80, height - 70, line_width_right - ratio * abs(line_width_right - line_width_left) - 30, line_height_top - 12);
+    markers = plotLineGrid(ratio, graph);
 }
