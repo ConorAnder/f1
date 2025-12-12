@@ -184,6 +184,7 @@ void setup() {
         buttons.add(new float[]{button_width_left, current_height, button_width_right, current_height + button_height});
     }
     is_dry = true;
+    plotButtonTitle();
 
 
     // Line plot graphing
@@ -201,6 +202,10 @@ void setup() {
     fill(primary2);
     stroke(primary2);
     select(0);
+
+    // Plot title and legend
+    plotMapTitle();
+    plotMapLegend();
 }
 
 void draw() {
@@ -274,10 +279,7 @@ void draw() {
     else {
         collapseBarChart(bar_heights, ratio);
         collapseLineGraph(ratio, line_graph);
-        stroke(background);
-        fill(background);
-        rectMode(CORNERS);
-        rect(map_width_left -2, map_height_bottom + 2, ratio * map_width_right + 2, map_height_top - 2);
+        collapseMap(ratio);
         if (ratio >= 1) {
             ratio = 0;
             building = true;

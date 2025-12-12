@@ -55,6 +55,14 @@ void plotButton(int num, color fill, String driver, color text) {
     text(driver, (buttons.get(num)[0] + buttons.get(num)[2]) / 2, (buttons.get(num)[1] + buttons.get(num)[3]) / 2 - 10);
 }
 
+void plotButtonTitle() {
+    float midwidth = (button_width_left + button_width_right) / 2;
+    textFont(f1_font);
+    textAlign(CENTER);
+    fill(255, 255, 255);
+    text("Choose Driver", midwidth, button_height_top - 40);
+}
+
 void hover() {
     boolean check = false;
     for (int i = 0; i < buttons.size(); i++) {

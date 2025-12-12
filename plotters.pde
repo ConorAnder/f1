@@ -79,6 +79,48 @@ boolean plotPath(Table driver_table, int size) {
     return false;
 }
 
+void plotMapTitle() {
+    float midwidth = (map_width_left + map_width_right) / 2;
+    textFont(f1_font);
+    textAlign(CENTER);
+    fill(255, 255, 255);
+    text("Silverstone Circuit Velocity Heat-Map", midwidth, map_height_top - 40);
+}
+
+void plotMapLegend() {
+    fill(255, 255, 255);
+    float y = (buttons.get(buttons.size() - 1)[1] + buttons.get(buttons.size() - 1)[3]) / 2 + 20;
+    strokeWeight(10);
+
+    textFont(f1_font, 15);
+    textAlign(LEFT);
+    text(str(int(speed_min)) + " Km/h", map_width_right - 300, y - 20);
+    textAlign(RIGHT);
+    text(str(int(speed_max)) + " Km/h", map_width_right + 100, y - 20);
+
+    int subdivisions = 100;
+    for (int i = 0; i < subdivisions; i++) {
+
+        float segment = i / float(subdivisions);
+        float x = lerp(map_width_right - 300, map_width_right + 100, segment);
+        color mapped_colour = lerpColor(primary1, primary2, segment);
+
+        stroke(mapped_colour);
+        line(x, y, x+1, y);
+    }
+}
+
+void collapseMap(float ratio) {
+    float map_height = map_height_bottom - map_height_top;
+
+    stroke(background);
+    fill(background);
+    rectMode(CORNERS);
+    rect(map_width_left -2, map_height_bottom - 1 * map_height / 8, ratio * map_width_right + 2, map_height_top - 2);
+    if (ratio * map_width_right + 2 < 3 * map_width_right / 4)
+        rect(map_width_left -2, map_height_bottom + 2, ratio * map_width_right + 2, map_height_top - 2);
+}
+
 void plotBarTitles() {
     float bar_height = bar_height_bottom - bar_height_top;
     float bar_width = bar_width_right - bar_width_left;
@@ -97,7 +139,7 @@ void plotBarTitles() {
     fill(255, 255, 255);
 
     // X axis title
-    text("Time Segment", bar_width_left + bar_width / 2, bar_height_bottom + 70);
+    text("Time Segment", bar_width_left + bar_width / 2 + 100, bar_height_bottom + 70);
 
     // Y axis title
     float x = bar_width_left - 45;
@@ -135,7 +177,7 @@ void plotBarMarkers() {
         pushMatrix();
         translate(x, y);
         rotate(-HALF_PI);
-        text(str(int(0.25 * i * hamilton_dry.getFloat(hamilton_dry.getRowCount() - 1, "Distance"))), 0, 0);
+        text(str(int(0.25 * i * dist_max)), 0, 0);
         popMatrix();
     }
 }
