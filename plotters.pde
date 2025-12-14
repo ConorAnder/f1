@@ -73,6 +73,7 @@ boolean plotPath(Table driver_table, int size) {
     }
     else if(track_index >= size) {
         track_index = 0;
+        save("f1.png");
         return true;
     }
     return false;
@@ -93,9 +94,11 @@ void plotMapLegend() {
 
     textFont(f1_font, 15);
     textAlign(LEFT);
-    text(str(int(speed_min)) + " Km/h", map_width_right - 300, y - 20);
+    text("0%", map_width_right - 300, y - 20);
+    textAlign(CENTER);
+    text("Throttle", map_width_right - 100, y - 20);
     textAlign(RIGHT);
-    text(str(int(speed_max)) + " Km/h", map_width_right + 100, y - 20);
+    text("100%", map_width_right + 100, y - 20);
 
     int subdivisions = 100;
     for (int i = 0; i < subdivisions; i++) {
