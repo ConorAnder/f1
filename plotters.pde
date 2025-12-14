@@ -73,7 +73,6 @@ boolean plotPath(Table driver_table, int size) {
     }
     else if(track_index >= size) {
         track_index = 0;
-        save("f1.png");
         return true;
     }
     return false;
